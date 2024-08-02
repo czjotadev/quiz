@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDENTE
+  AGUARDANDO_ESTOQUE
+  ENVIADO
+  CANCELADO
+  CONCLUIDO
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  name               String
+  email              String
+  password           String
+  company            String
+  professionaSegment String    @map("professiona_segment")
+  active             Boolean   @default(true)
+  admin              Boolean   @default(false)
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @default(now()) @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  quizzes Quiz[]
+
+  @@map("users")
+}
+
+model Question {
+  id          Int       @id @default(autoincrement())
+  description String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  alternativies Alternative[]
+  quizQuestions QuizQuestion[]
+
+  @@map("questions")
+}
+
+model Alternative {
+  id          Int       @id @default(autoincrement())
+  description String
+  questionId  Int       @map("question_id")
+  correct     Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("alternatives")
+}
+
+model Quiz {
+  id        Int       @id @default(autoincrement())
+  userId    String    @map("user_id")
+  result    Int?      @default(0)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  quizQuestion QuizQuestion[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id         Int       @id @default(autoincrement())
+  quizId     Int
+  questionId Int
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  quiz     Quiz     @relation(fields: [quizId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("quiz_questions")
+}
+
+model Ranking {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  quizId    Int
+  position  Int
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("ranking")
+}

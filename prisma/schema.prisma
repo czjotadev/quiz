@@ -50,12 +50,14 @@ model Alternative {
   id          Int       @id @default(autoincrement())
   description String
   questionId  Int       @map("question_id")
-  correct     Boolean   @default(false)
+  correct     Boolean?   
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
   question Question @relation(fields: [questionId], references: [id])
+
+  quizQuestions QuizQuestion[]
 
   @@map("alternatives")
 }
@@ -76,15 +78,17 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id         Int       @id @default(autoincrement())
-  quizId     Int
-  questionId Int
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @default(now()) @map("updated_at")
-  deletedAt  DateTime? @map("deleted_at")
+  id            Int       @id @default(autoincrement())
+  quizId        Int
+  questionId    Int
+  alternativeId Int?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
-  quiz     Quiz     @relation(fields: [quizId], references: [id])
-  question Question @relation(fields: [questionId], references: [id])
+  quiz        Quiz         @relation(fields: [quizId], references: [id])
+  question    Question     @relation(fields: [questionId], references: [id])
+  alternative Alternative? @relation(fields: [alternativeId], references: [id])
 
   @@map("quiz_questions")
 }
@@ -93,7 +97,7 @@ model Ranking {
   id        Int       @id @default(autoincrement())
   userId    String
   quizId    Int
-  position  Int
+  score     Int
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @map("updated_at")
   deletedAt DateTime? @map("deleted_at")

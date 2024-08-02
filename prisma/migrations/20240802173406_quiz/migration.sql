@@ -34,7 +34,7 @@ CREATE TABLE "alternatives" (
     "id" SERIAL NOT NULL,
     "description" TEXT NOT NULL,
     "question_id" INTEGER NOT NULL,
-    "correct" BOOLEAN NOT NULL DEFAULT false,
+    "correct" BOOLEAN,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP(3),
@@ -59,6 +59,7 @@ CREATE TABLE "quiz_questions" (
     "id" SERIAL NOT NULL,
     "quizId" INTEGER NOT NULL,
     "questionId" INTEGER NOT NULL,
+    "alternativeId" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP(3),
@@ -71,7 +72,7 @@ CREATE TABLE "ranking" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
     "quizId" INTEGER NOT NULL,
-    "position" INTEGER NOT NULL,
+    "score" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP(3),
@@ -90,3 +91,6 @@ ALTER TABLE "quiz_questions" ADD CONSTRAINT "quiz_questions_quizId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "quiz_questions" ADD CONSTRAINT "quiz_questions_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "questions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "quiz_questions" ADD CONSTRAINT "quiz_questions_alternativeId_fkey" FOREIGN KEY ("alternativeId") REFERENCES "alternatives"("id") ON DELETE SET NULL ON UPDATE CASCADE;

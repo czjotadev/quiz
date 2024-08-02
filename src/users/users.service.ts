@@ -43,6 +43,7 @@ export class UsersService {
 
       return { message: 'Cadastro realizado com sucesso!', id: user.id };
     } catch (error) {
+      console.log(error)
       throw new HttpException(
         'Erro ao cadastrar o usuário.',
         HttpStatus.BAD_REQUEST,

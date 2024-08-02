@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
-import { CreateQuizDto } from './dto/create-quiz.dto';
-import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('quizzes')
 export class QuizzesController {
   constructor(private readonly quizzesService: QuizzesService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createQuizDto: CreateQuizDto) {
-    return this.quizzesService.create(createQuizDto);
+  create(@Req() request: Request) {
+    const userId = request['user'].sub;
+    return this.quizzesService.create(userId);
   }
 
-  @Get()
-  findAll() {
-    return this.quizzesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.quizzesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizzesService.update(+id, updateQuizDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.quizzesService.remove(+id);
+  @UseGuards(AuthGuard)
+  @Post('submit')
+  subimit(@Req() request: Request, @Body()submitQuiz: SubmitQuizDto) {
+    const userId = request['user'].sub;
+    return this.quizzesService.submit(userId, submitQuiz);
   }
 }
